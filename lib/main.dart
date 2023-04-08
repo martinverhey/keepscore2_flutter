@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
+import 'package:keepscore2_flutter/matches.page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -15,43 +16,28 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       title: 'KeepScore 2',
-      home: Home(),
+      home: MatchesPage(),
     );
   }
 }
 
-class _HomeState extends State<Home> {
+class HomePage extends StatelessWidget {
+  const HomePage({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('KeepScore 2'),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.add),
-              onPressed: () {},
-              tooltip: 'New',
-            )
-          ],
-        ),
-        body: home());
-  }
-
-  Widget home() {
-    return ListView.builder(
-      padding: const EdgeInsets.all(16.0),
-      itemBuilder: (context, i) {
-        if (i.isOdd) return const Divider();
-
-        return const Text("Match");
-      },
+      appBar: AppBar(
+        title: const Text('KeepScore 2'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.add),
+            onPressed: () {},
+            tooltip: 'New',
+          )
+        ],
+      ),
+      body: const Text('K'),
     );
   }
-}
-
-class Home extends StatefulWidget {
-  const Home({Key? key}) : super(key: key);
-
-  @override
-  _HomeState createState() => _HomeState();
 }
