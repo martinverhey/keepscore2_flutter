@@ -1,16 +1,37 @@
-# keepscore2_flutter
+# Keepscore2 Flutter
+**Progress**
+- [ ] Login
+- [ ] Create account
+  - [ ] Anonymous
+  - [ ] E-mail
+  - [ ] *Apple*
+  - [ ] *Google*
+- [ ] Create competition
+- [ ] Leaderboard
+  - [ ] Show rank
+  - [ ] *Show change*
+  - [ ] *Show streak*
+  - [ ] *Show medals*
+  - [ ] *Sort by rank/name/change*
+- [ ] Profile
+  - [ ] *Stats*
+- [ ] Matches **(WIP)**
+  - [ ] Recent (20) matches **(WIP)**
+  - [ ] *Load more*
+  - [ ] Highlight yourself
+  - [ ] *Filter by gametype (1v1/2v2/…)*
+- [ ] Match detail
+- [ ] Add match
+- [ ] Competitions
+  - [ ] Create
+  - [ ] Join
+    - [ ] Enter code
+    - [ ] Scan QR-code
+  - [ ] Invite
+    - [ ] Show QR
+    - [ ] *Share*
+  - [ ] Leave
+- [ ] Settings
+- [ ] Logout
 
-A new Flutter project.
-
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+*Note: Italic items will be added later.*
