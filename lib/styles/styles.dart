@@ -16,11 +16,15 @@ class AppColors {
   Color blue = Colors.blue;
   Color green = Colors.green;
   Color grey = Colors.grey;
-  Color? grey200 = Colors.grey[200];
+  Color grey100 = Colors.grey.shade100;
+  Color grey200 = Colors.grey.shade200;
+  Color grey500 = Colors.grey.shade500;
 }
 
 class TextStyles {
   TextStyle get h1 => const TextStyle(fontSize: 28);
+  TextStyle get h2 => const TextStyle(fontSize: 24);
+  TextStyle get h3 => const TextStyle(fontSize: 20);
   TextStyle get body => const TextStyle(fontSize: 16);
   TextStyle get subtitle => const TextStyle(fontSize: 12);
 }

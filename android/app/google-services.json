@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "123394977959",
+    "firebase_url": "https://keepscore2dev-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "keepscore2dev",
+    "storage_bucket": "keepscore2dev.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:123394977959:android:db2a1e709edce9f5d0ab82",
+        "android_client_info": {
+          "package_name": "com.example.keepscore2_flutter"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAql1AP3mPwQrxbQm1i5CLWw-_uXhRiJQA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
