@@ -1,4 +1,4 @@
-package com.example.keepscore2_flutter
+package nl.martini.keepscore2
 
 import io.flutter.embedding.android.FlutterActivity
 

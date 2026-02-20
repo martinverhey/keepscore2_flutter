@@ -2,55 +2,58 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:keepscore2_flutter/competition/competitions.page.dart';
-import 'package:keepscore2_flutter/matches/add-match/add-match.page.dart';
-import 'package:keepscore2_flutter/matches/matches.page.dart';
-import 'package:keepscore2_flutter/styles/styles.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-// Change to false to use live database instance.
-const useDatabaseEmulator = true;
-// The port we've set the Firebase Database emulator to run on via the
-// `firebase.json` configuration file.
-const emulatorPort = 9000;
-const authPort = 9099;
-// Android device emulators consider localhost of the host machine as 10.0.2.2
-// so let's use that if running on Android.
-final emulatorHost =
-    (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) ? '10.0.2.2' : 'localhost';
+import 'competition/competitions.page.dart';
+import 'login/login.page.dart';
+import 'matches/add-match/add-match.page.dart';
+import 'matches/matches.page.dart';
+import 'shared/helpers.dart';
+import 'styles/styles.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
 
-  if (useDatabaseEmulator) {
-    // FirebaseDatabase.instanceFor(
-    //         app: Firebase.app(), databaseURL: '$emulatorHost:$emulatorPort?ns=keepscore2dev')
-    //     .useDatabaseEmulator(emulatorHost, emulatorPort);
-    FirebaseDatabase.instance.useDatabaseEmulator(emulatorHost, emulatorPort);
-    FirebaseAuth.instance.useAuthEmulator(emulatorHost, authPort);
-  }
+  await dotenv.load();
+
+  await Supabase.initialize(
+    url: dotenv.env['SUPABASE_URL']!,
+    anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
+  );
 
   runApp(const KeepScore2());
 }
+
+final supabase = Supabase.instance.client;
 
 class KeepScore2 extends StatelessWidget {
   const KeepScore2({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       title: 'KeepScore 2',
-      home: Home(),
+      theme: ThemeData.light().copyWith(
+        primaryColor: Colors.green,
+        textButtonTheme: TextButtonThemeData(
+          style: TextButton.styleFrom(
+            foregroundColor: Colors.green,
+          ),
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            foregroundColor: Colors.white,
+            backgroundColor: Colors.green,
+          ),
+        ),
+      ),
+      home: supabase.auth.currentSession == null
+          ? const LoginPage()
+          : const Home(),
       debugShowCheckedModeBanner: false,
     );
   }
@@ -84,10 +87,7 @@ class _HomeState extends State<Home> {
       ][_currentPageIndex],
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const AddMatchPage()),
-          );
+          navigateToPage(context: context, page: const AddMatchPage());
         },
         child: const Icon(Icons.add),
       ),
@@ -132,22 +132,21 @@ class HomePage extends StatelessWidget {
             icon: const Icon(Icons.add),
             onPressed: () {},
             tooltip: 'New',
-          )
+          ),
         ],
       ),
       body: Center(
         child: Column(
           children: [
             ElevatedButton(
-              onPressed: () async {
-                debugPrint('Trying to sign in');
-                final success = await signIn();
-                if (success && context.mounted) {
-                  Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
-                }
+              onPressed: () {
+                navigateToPage(
+                  context: context,
+                  page: const LoginPage(),
+                );
               },
               child: const Text('Login'),
-            )
+            ),
           ],
         ),
       ),
@@ -156,19 +155,22 @@ class HomePage extends StatelessWidget {
 }
 
 Future<bool> signIn() async {
-  final creds = await FirebaseAuth.instance.signInAnonymously();
-  debugPrint(creds.user?.uid);
-  if (creds.user != null) {
-    return true;
-  }
-  return false;
+  // final creds = await FirebaseAuth.instance.signInAnonymously();
+  // debugPrint(creds.user?.uid);
+  // if (creds.user != null) {
+  //   return true;
+  // }
+  // return false;
+  await Future.delayed(Duration.zero);
+  return true;
 }
 
 class SegmentedControlExample extends StatefulWidget {
   const SegmentedControlExample({super.key});
 
   @override
-  State<SegmentedControlExample> createState() => _SegmentedControlExampleState();
+  State<SegmentedControlExample> createState() =>
+      _SegmentedControlExampleState();
 }
 
 class _SegmentedControlExampleState extends State<SegmentedControlExample> {
@@ -180,7 +182,7 @@ class _SegmentedControlExampleState extends State<SegmentedControlExample> {
       navigationBar: CupertinoNavigationBar(
         middle: CupertinoSlidingSegmentedControl(
           groupValue: _selectedSegment,
-          onValueChanged: (int? value) {
+          onValueChanged: (value) {
             if (value != null) {
               setState(() {
                 _selectedSegment = value;
@@ -219,8 +221,22 @@ class _SegmentedControlExampleState extends State<SegmentedControlExample> {
 }
 
 AppStyle get $styles => AppStyle();
-FirebaseDatabase get $db => FirebaseDatabase.instanceFor(
-      app: Firebase.app(),
-      databaseURL: 'http://localhost:9000?ns=keepscore2dev',
-      // databaseURL: 'http://localhost:9000',
+// FirebaseDatabase get $db => FirebaseDatabase.instanceFor(
+//       app: Firebase.app(),
+//       databaseURL: 'http://localhost:9000?ns=keepscore2dev',
+//       // databaseURL: 'http://localhost:9000',
+//     );
+
+extension ContextExtension on BuildContext {
+  void showSnackBar(String message, {bool isError = false}) {
+    print(message);
+    ScaffoldMessenger.of(this).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: isError
+            ? Theme.of(this).colorScheme.error
+            : Theme.of(this).snackBarTheme.backgroundColor,
+      ),
     );
+  }
+}

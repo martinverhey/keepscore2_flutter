@@ -1,17 +1,14 @@
-import 'dart:async';
-
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:keepscore2_flutter/competition/competition.repository.dart';
-import 'package:keepscore2_flutter/main.dart';
-import 'package:keepscore2_flutter/matches/match.component.dart';
+
+import '../../main.dart';
+import '../match.component.dart';
 
 List<RankedPlayer> players = [...MatchComponent.team1, ...MatchComponent.team2];
 
 class SelectPlayersPage extends StatefulWidget {
-  final ValueChanged<List<String>> onChanged;
-  final List<String> selectedPlayerIds;
+  final ValueChanged<List<int>> onChanged;
+  final List<int> selectedPlayerIds;
 
   const SelectPlayersPage({
     super.key,
@@ -24,8 +21,8 @@ class SelectPlayersPage extends StatefulWidget {
 }
 
 class _SelectPlayersPageState extends State<SelectPlayersPage> {
-  late Stream<DatabaseEvent> stream =
-      $db.ref('/competitions/${CompetitionRepository.currentCompetition}/players').onValue;
+  // late Stream<DatabaseEvent> stream =
+  //     $db.ref('/competitions/${CompetitionRepository.currentCompetition}/players').onValue;
 
   @override
   void initState() {
@@ -36,16 +33,18 @@ class _SelectPlayersPageState extends State<SelectPlayersPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: CustomScrollView(slivers: [
-        _sliverAppBar(context),
-        _content(),
-      ]),
+      body: CustomScrollView(
+        slivers: [
+          _sliverAppBar(context),
+          _content(),
+        ],
+      ),
     );
   }
 
   Widget _sliverAppBar(BuildContext context) {
     return CupertinoSliverNavigationBar(
-      automaticallyImplyLeading: false,
+      // automaticallyImplyLeading: false,
       largeTitle: Text(
         'Select Players',
         style: TextStyle(color: $styles.colors.orange),
@@ -61,50 +60,58 @@ class _SelectPlayersPageState extends State<SelectPlayersPage> {
   }
 
   Widget _content() {
-    return StreamBuilder(
-      stream: stream,
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          print('Error: ${snapshot.error}');
-        }
-
-        print('Data: ${snapshot.data?.snapshot.value}');
-        if (!snapshot.hasData || snapshot.data?.snapshot.value == null) {
-          return const SliverToBoxAdapter(
-            child: Center(
-              child: CircularProgressIndicator(),
-            ),
-          );
-        }
-
-        Map<dynamic, dynamic> items = snapshot.data?.snapshot.value as Map<dynamic, dynamic>;
-
-        List<PlayerName> players = [];
-        for (var i = 0; i < items.values.length; i++) {
-          players.add(
-            PlayerName(
-              id: items.keys.toList()[i],
-              name: items.values.toList()[i],
-            ),
-          );
-        }
-
-        players.sort(
-          (a, b) => a.name.compareTo(b.name),
-        );
-
-        return SliverList(
-          delegate: SliverChildListDelegate(
-            players.map((e) => _playerItem(e)).toList(),
-          ),
-        );
-      },
+    return SliverList(
+      delegate: SliverChildListDelegate(
+        players.map((e) => _playerItem(e)).toList(),
+      ),
     );
+    return ListTile(title: Text('Player'));
+
+    // return StreamBuilder(
+    //   stream: stream,
+    //   builder: (context, snapshot) {
+    //     if (snapshot.hasError) {
+    //       print('Error: ${snapshot.error}');
+    //     }
+
+    //     print('Data: ${snapshot.data?.snapshot.value}');
+    //     if (!snapshot.hasData || snapshot.data?.snapshot.value == null) {
+    //       return const SliverToBoxAdapter(
+    //         child: Center(
+    //           child: CircularProgressIndicator(),
+    //         ),
+    //       );
+    //     }
+
+    //     Map<dynamic, dynamic> items = snapshot.data?.snapshot.value as Map<dynamic, dynamic>;
+
+    //     List<PlayerName> players = [];
+    //     for (var i = 0; i < items.values.length; i++) {
+    //       players.add(
+    //         PlayerName(
+    //           id: items.keys.toList()[i],
+    //           name: items.values.toList()[i],
+    //         ),
+    //       );
+    //     }
+
+    //     players.sort(
+    //       (a, b) => a.name.compareTo(b.name),
+    //     );
+
+    //     return SliverList(
+    //       delegate: SliverChildListDelegate(
+    //         players.map((e) => _playerItem(e)).toList(),
+    //       ),
+    //     );
+    //   },
+    // );
   }
 
   Widget _playerItem(PlayerName player) {
     return InkWell(
-      onTap: () => _togglePlayer(player, !widget.selectedPlayerIds.contains(player.id)),
+      onTap: () =>
+          _togglePlayer(player, !widget.selectedPlayerIds.contains(player.id)),
       child: Row(
         children: [
           Checkbox(

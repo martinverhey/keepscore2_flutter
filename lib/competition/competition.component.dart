@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:keepscore2_flutter/main.dart';
+
+import '../main.dart';
 
 class CompetitionComponent extends StatelessWidget {
   final String competitionName;

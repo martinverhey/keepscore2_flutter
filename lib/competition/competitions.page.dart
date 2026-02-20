@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:keepscore2_flutter/competition/competition.component.dart';
-import 'package:keepscore2_flutter/shared/components/custom_cupertino_sliver_navigation_bar.dart';
 
 import '../main.dart';
+import '../shared/components/custom_cupertino_sliver_navigation_bar.dart';
+import 'competition.component.dart';
 
 class CompetitionsPage extends StatelessWidget {
   const CompetitionsPage({super.key});
@@ -10,10 +10,12 @@ class CompetitionsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: CustomScrollView(slivers: [
-        _sliverAppBar(),
-        _content(),
-      ]),
+      body: CustomScrollView(
+        slivers: [
+          _sliverAppBar(),
+          _content(),
+        ],
+      ),
     );
   }
 

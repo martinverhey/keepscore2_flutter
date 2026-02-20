@@ -1,11 +1,10 @@
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:keepscore2_flutter/main.dart';
-import 'package:keepscore2_flutter/matches/match.component.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../competition/competition.repository.dart';
+import '../main.dart';
 import '../shared/components/custom_cupertino_sliver_navigation_bar.dart';
+import 'match.component.dart';
+import 'matches_cubit.dart';
 
 enum GameType {
   all('All'),
@@ -19,168 +18,113 @@ enum GameType {
   const GameType(this.value);
 }
 
-class MatchesPage extends StatefulWidget {
-  const MatchesPage({super.key});
-
-  @override
-  State<MatchesPage> createState() => _MatchesPageState();
-}
-
-class _MatchesPageState extends State<MatchesPage> {
-  // late Stream<DatabaseEvent> stream = $db
-  //     .ref(
-  //         '/matches/${CompetitionRepository.currentCompetition}/${CompetitionRepository.currentSeason}')
-  //     .onValue;
-  GameType selectedGameType = GameType.all;
-  FirebaseDatabase database = FirebaseDatabase.instance;
-  // FirebaseDatabase database =
-  //     FirebaseDatabase.instanceFor(app: Firebase.app(), databaseURL: '$emulatorHost:$emulatorPort');
-  // FirebaseDatabase database = FirebaseDatabase.instanceFor(
-  //     app: Firebase.app(), databaseURL: '$emulatorHost:$emulatorPort?ns=keepscore2dev');
-
-  @override
-  void initState() {
-    //     .instanceFor(
-    //   app: Firebase.app(),
-    //   databaseURL: 'http://127.0.0.1:9000?ns=keepscore2dev',
-    // )
-    // FirebaseDatabase.instance.ref('hello').onValue.listen((DatabaseEvent event) {
-    //   if (event.snapshot.exists) {
-    //     print(event.snapshot);
-    //   }
-    //   print('no snapshot');
-    // });
-
-    super.initState();
-  }
+class MyWidget extends StatelessWidget {
+  const MyWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: CustomScrollView(slivers: [
-        _sliverAppBar(),
-        SliverToBoxAdapter(
-          child: IconButton(
-              onPressed: () async {
-                try {
-                  database.ref('test/').push().set({'1': '2'});
-                } catch (e) {
-                  print(e);
-                }
-              },
-              icon: Icon(Icons.add)),
-        ),
-        // _content(), TODO: ENABLE
-      ]),
+    return const Placeholder();
+  }
+}
+
+class MatchesPage extends StatelessWidget {
+  const MatchesPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => MatchesCubit(),
+      child: BlocBuilder<MatchesCubit, MatchesState>(
+        builder: (context, state) {
+          return Scaffold(
+            body: CustomScrollView(
+              slivers: [
+                if (state is MatchesInitial) ...[
+                  SliverToBoxAdapter(
+                    child: Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  ),
+                ],
+                if (state is MatchesLoaded) ...[
+                  _sliverAppBar(state),
+                  _content(state),
+                ],
+                if (state is MatchesError) ...[
+                  SliverToBoxAdapter(
+                    child: Center(
+                      child: Text(state.error.toString()),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 
-  Widget _sliverAppBar() {
+  Widget _sliverAppBar(MatchesLoaded state) {
     return CustomCupertinoSliverNavigationBar(
       title: 'Matches',
       trailing: Material(
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            if (selectedGameType != GameType.all)
+            if (state.selectedGameType != GameType.all)
               Text(
-                selectedGameType.value,
+                state.selectedGameType.value,
                 style: TextStyle(
                   color: $styles.colors.orange,
                   fontWeight: FontWeight.bold,
                 ),
               ),
             PopupMenuButton<GameType>(
-                initialValue: selectedGameType,
-                onSelected: (GameType value) {
-                  setState(() {
-                    selectedGameType = value;
-                  });
-                },
-                child: Icon(
-                  selectedGameType == GameType.all ? Icons.filter_alt_outlined : Icons.filter_alt,
-                  color: $styles.colors.orange,
-                ),
-                itemBuilder: (context) {
-                  return [
-                    const PopupMenuItem<GameType>(value: GameType.all, child: Text('All')),
-                    const PopupMenuItem<GameType>(value: GameType.oneVsOne, child: Text('1v1')),
-                    const PopupMenuItem<GameType>(value: GameType.twoVsTwo, child: Text('2v2')),
-                    const PopupMenuItem<GameType>(value: GameType.other, child: Text('Other')),
-                  ];
-                }),
+              initialValue: state.selectedGameType,
+              onSelected: (value) {
+                // TODO: emit value as new selectedGameType;
+                // setState(() {
+                //   selectedGameType = value;
+                // });
+              },
+              child: Icon(
+                state.selectedGameType == GameType.all
+                    ? Icons.filter_alt_outlined
+                    : Icons.filter_alt,
+                color: $styles.colors.orange,
+              ),
+              itemBuilder: (context) {
+                return [
+                  for (GameType gameType in GameType.values)
+                    PopupMenuItem<GameType>(
+                      value: gameType,
+                      child: Text(gameType.value),
+                    ),
+                ];
+              },
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _content() {
-    return StreamBuilder(
-      stream: FirebaseDatabase.instanceFor(
-        app: Firebase.app(),
-        databaseURL: 'http://localhost:9000?ns=keepscore2dev',
-      ).ref('/matches').onValue,
-      // matches/-O11dCvm7qNoGpjhq0FJ/2024m07
-      // stream: $db
-      //     .ref(
-      //         '/matches/${CompetitionRepository.currentCompetition}/${CompetitionRepository.currentSeason}')
-      //     .onValue,
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          print('Error: ${snapshot.error}');
-        }
-
-        print('Data: ${snapshot.data?.snapshot.value}');
-        if (!snapshot.hasData || snapshot.data?.snapshot.value == null) {
-          return const SliverToBoxAdapter(
-            child: Center(
-              child: CircularProgressIndicator(),
-            ),
-          );
-        }
-
-        Map<dynamic, dynamic> items = snapshot.data?.snapshot.value as Map<dynamic, dynamic>;
-
-        print(items);
-
-        List<Match> matches = [];
-        // for (var i = 0; i < items.values.length; i++) {
-        //   matches.add(
-        //     Match(
-        //       id: items.keys.toList()[i],
-        //       name: items.values.toList()[i],
-        //     ),
-        //   );
-        // }
-
-        // matches.sort(
-        //   (a, b) => a.name.compareTo(b.name),
-        // );
-
-        return SliverList(
-          delegate: SliverChildListDelegate(
-            matches.map((e) => MatchComponent(match: e)).toList(),
+  Widget _content(MatchesLoaded state) {
+    return SliverList(
+      delegate: SliverChildBuilderDelegate(
+        (context, index) => Padding(
+          padding: EdgeInsets.only(
+            bottom: $styles.insets.m,
+            left: $styles.insets.m,
+            right: $styles.insets.m,
           ),
-        );
-      },
+          child: MatchComponent(match: state.matches[index]),
+        ),
+        childCount: state.matches.length,
+      ),
     );
-
-    // return SliverList(
-    //   delegate: SliverChildBuilderDelegate(
-    //     (context, index) => Padding(
-    //       padding: EdgeInsets.only(
-    //         bottom: $styles.insets.m,
-    //         left: $styles.insets.m,
-    //         right: $styles.insets.m,
-    //       ),
-    //       child: const MatchComponent(),
-    //     ),
-    //     childCount: 5,
-    //   ),
-    // );
   }
-}
 
 // final double _sliverAppBarHeight = 160.0;
 
@@ -200,7 +144,6 @@ class _MatchesPageState extends State<MatchesPage> {
 //     // titlePadding: EdgeInsets.only(left: $styles.insets.xl, bottom: $styles.insets.xl),
 //   ),
 // );
-
 
 // int _selectedSegment = 0;
 // final List<String> segmentedControlTitles = ['All', '1v1', '2v2', 'Other'];
@@ -238,4 +181,4 @@ class _MatchesPageState extends State<MatchesPage> {
 //     );
 //   }
 //   return segmentedControlMap;
-// }
+}

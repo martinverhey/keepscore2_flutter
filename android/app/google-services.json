@@ -10,7 +10,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:123394977959:android:db2a1e709edce9f5d0ab82",
         "android_client_info": {
-          "package_name": "com.example.keepscore2_flutter"
+          "package_name": "nl.martini.keepscore2"
         }
       },
       "oauth_client": [],

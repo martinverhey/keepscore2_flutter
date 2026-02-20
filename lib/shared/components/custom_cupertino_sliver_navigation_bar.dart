@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
-import 'package:keepscore2_flutter/main.dart';
+
+import '../../main.dart';
 
 class CustomCupertinoSliverNavigationBar extends StatelessWidget {
   final String title;

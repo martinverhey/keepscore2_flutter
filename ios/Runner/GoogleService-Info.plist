@@ -9,7 +9,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.example.keepscore2Flutter</string>
+	<string>nl.martini.keepscore2</string>
 	<key>PROJECT_ID</key>
 	<string>keepscore2dev</string>
 	<key>STORAGE_BUCKET</key>

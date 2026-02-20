@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.keepscore2_flutter">
+    package="nl.martini.keepscore2">
    <application
         android:label="keepscore2_flutter"
         android:name="${applicationName}"
@@ -23,6 +23,15 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <!-- Accepts URIs that begin with YOUR_SCHEME://YOUR_HOST -->
+                <data
+                    android:scheme="keepscore2"
+                    android:host="login-callback" />
             </intent-filter>
         </activity>
         <!-- Don't delete the meta-data below.
