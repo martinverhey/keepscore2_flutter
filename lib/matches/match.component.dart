@@ -199,7 +199,7 @@ class Match {
           (x) => RankedPlayer.fromMap(x as Map<String, dynamic>),
         ),
       ),
-      type: Type.values.elementAt((map['match_type'] as int) - 1),
+      type: typeFromString(map['match_type'] as String?),
     );
     return match;
   }
@@ -208,6 +208,23 @@ class Match {
 
   factory Match.fromJson(String source) =>
       Match.fromMap(json.decode(source) as Map<String, dynamic>);
+}
+
+Type typeFromString(String? type) {
+  if (type == null) return Type.other;
+
+  switch (type) {
+    case 'oneVsOne':
+      return Type.oneVsOne;
+    case 'twoVsTwo':
+      return Type.twoVsTwo;
+    case 'threeVsThree':
+      return Type.threeVsThree;
+    case 'fourVsFour':
+      return Type.fourVsFour;
+    default:
+      return Type.other;
+  }
 }
 
 class MatchDetails {

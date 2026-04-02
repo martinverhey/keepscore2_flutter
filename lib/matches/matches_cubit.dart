@@ -15,18 +15,18 @@ class MatchesCubit extends Cubit<MatchesState> {
   void _init() async {
     try {
       final data = await supabase.from('match').select('''
-            id,
-            created_at,
-            competition_id,
-            season_id,
-            created_by(id, name), 
-            points_team1,
-            points_team2,
-            score_team1,
-            score_team2,
-            players_team1(id, match_id),
-            players_team2(id, match_id),
-            match_type
+            *,
+            match_players(
+              id,
+              team,
+              player:player_id!inner (
+                id,
+                name,
+                rank:leaderboards!inner (
+                  rank
+                )
+              )
+            )
           ''').eq('competition_id', 1);
       if (isClosed) return;
 
