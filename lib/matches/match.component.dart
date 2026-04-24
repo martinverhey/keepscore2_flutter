@@ -1,4 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -211,8 +210,6 @@ class Match {
 }
 
 Type typeFromString(String? type) {
-  if (type == null) return Type.other;
-
   switch (type) {
     case 'oneVsOne':
       return Type.oneVsOne;
@@ -250,22 +247,19 @@ class MatchComponent extends StatelessWidget {
 
   const MatchComponent({super.key, required this.match});
 
-  static RankedPlayer player1 =
-      RankedPlayer(id: 0, name: 'Player 1', rank: 900);
+  static RankedPlayer player1 = RankedPlayer(id: 0, name: 'Player 1', rank: 900);
   static RankedPlayer player2 = RankedPlayer(
     id: 1,
     name: 'Player 22312235',
     rank: 1050,
   );
-  static RankedPlayer player3 =
-      RankedPlayer(id: 2, name: 'Player 3', rank: 950);
+  static RankedPlayer player3 = RankedPlayer(id: 2, name: 'Player 3', rank: 950);
   static RankedPlayer player4 = RankedPlayer(
     id: 3,
     name: 'Player 43152342235235234',
     rank: 1200,
   );
-  static RankedPlayer player5 =
-      RankedPlayer(id: 4, name: 'Player 5', rank: 900);
+  static RankedPlayer player5 = RankedPlayer(id: 4, name: 'Player 5', rank: 900);
 
   static List<RankedPlayer> team1 = [player1, player2];
   static List<RankedPlayer> team2 = [player3, player4, player5];
@@ -342,8 +336,7 @@ class MatchComponent extends StatelessWidget {
       ),
       child: Text(
         '$score',
-        style: $styles.text.h1
-            .copyWith(color: $styles.colors.black, fontWeight: FontWeight.w600),
+        style: $styles.text.h1.copyWith(color: $styles.colors.black, fontWeight: FontWeight.w600),
       ),
     );
   }

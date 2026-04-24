@@ -16,19 +16,24 @@ class MatchesCubit extends Cubit<MatchesState> {
     try {
       final data = await supabase.from('match').select('''
             *,
+            created_by:created_by!inner (
+              id,
+              name
+            ),
             match_players(
               id,
               team,
               player:player_id!inner (
                 id,
-                name,
-                rank:leaderboards!inner (
-                  rank
-                )
+                name
               )
             )
           ''').eq('competition_id', 1);
       if (isClosed) return;
+
+      final leaderboards = await supabase.from('leaderboards').select('*');
+      // .eq('season_id', 1)
+      // .eq('match_type', '1v1');
 
       List<Match> matches = data
           .map(
